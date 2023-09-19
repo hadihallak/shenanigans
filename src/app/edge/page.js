@@ -1,13 +1,25 @@
 import Image from 'next/image'
 import styles from './page.module.css'
 
-export default function Home() {
+export default async function Home() {
+  console.time('fetch with edge')
+  const req = await fetch('https://jsonplaceholder.typicode.com/todos/', {
+    cache: 'no-store',
+  })
+  console.timeEnd('fetch with edge')
+
+  if (!req.ok) {
+    throw new Error('hi')
+  }
+  const data = await req.json()
+  const { length } = data
   return (
     <main className={styles.main}>
       <div className={styles.description}>
         <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
+          <code className={styles.code}>
+            {JSON.stringify({ source: 'edge', length })}
+          </code>
         </p>
         <div>
           <a
